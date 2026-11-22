@@ -8,12 +8,13 @@ import {
   Sparkles, 
   Loader2, 
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { AppLayout } from '../components/layout/AppLayout';
 import { api } from '../services/api';
 
 export const IngestPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('file'); // 'file' | 'url'
+  const [activeTab, setActiveTab] = useState('file');
   const [url, setUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileError, setFileError] = useState('');
@@ -60,10 +61,7 @@ export const IngestPage = () => {
   const handleStartIngest = async () => {
     if (activeTab === 'url') {
       const err = validateUrl(url);
-      if (err) {
-        setUrlError(err);
-        return;
-      }
+      if (err) { setUrlError(err); return; }
       setUrlError('');
     } else {
       if (!selectedFile) {
@@ -107,33 +105,39 @@ export const IngestPage = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
         
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Ingest Media
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            Upload or import video lectures for AI processing and summarization
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-mono text-[var(--color-secondary)] tracking-wider uppercase font-semibold mb-1">
+              <Sparkles className="w-4 h-4 text-[var(--color-secondary)]" />
+              <span>OmniVideo Ingestion</span>
+            </div>
+            <h1 className="text-3xl font-extrabold text-[var(--color-text)] tracking-tight">
+              Ingest Media
+            </h1>
+            <p className="text-sm text-[var(--color-text-body)] mt-1">
+              Upload or import video lectures for AI processing and summarization.
+            </p>
+          </div>
         </div>
 
         {/* Ingest Card */}
-        <div className="bg-[#121828] border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-lg">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-5 sm:p-8 space-y-6"
+        >
           
           {/* Method Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-900/90 border border-slate-800 rounded-xl max-w-sm">
+          <div className="flex items-center gap-1.5 p-1 bg-white/60 border border-[var(--color-border)] rounded-xl max-w-sm">
             <button
               type="button"
-              onClick={() => {
-                setActiveTab('file');
-                setUrlError('');
-              }}
-              className={`flex-1 py-2 rounded-lg text-xs font-semibold text-center flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              onClick={() => { setActiveTab('file'); setUrlError(''); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold text-center flex items-center justify-center gap-2 transition-all duration-300 ${
                 activeTab === 'file'
-                  ? 'bg-[#5850ec] text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/30'
+                  : 'text-[var(--color-text-body)] hover:text-[var(--color-primary)] hover:bg-white'
               }`}
             >
               <UploadCloud className="w-4 h-4" />
@@ -141,14 +145,11 @@ export const IngestPage = () => {
             </button>
             <button
               type="button"
-              onClick={() => {
-                setActiveTab('url');
-                setFileError('');
-              }}
-              className={`flex-1 py-2 rounded-lg text-xs font-semibold text-center flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              onClick={() => { setActiveTab('url'); setFileError(''); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold text-center flex items-center justify-center gap-2 transition-all duration-300 ${
                 activeTab === 'url'
-                  ? 'bg-[#5850ec] text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[var(--color-secondary)] text-white shadow-md shadow-[var(--color-secondary)]/30'
+                  : 'text-[var(--color-text-body)] hover:text-[var(--color-secondary)] hover:bg-white'
               }`}
             >
               <LinkIcon className="w-4 h-4" />
@@ -159,32 +160,32 @@ export const IngestPage = () => {
           {/* Tab 1: File Dropzone */}
           {activeTab === 'file' && (
             <div>
-              <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 hover:border-indigo-500/80 rounded-2xl p-8 sm:p-12 cursor-pointer bg-slate-900/40 hover:bg-slate-900/70 transition-all text-center">
+              <label className="flex flex-col items-center justify-center border-2 border-dashed border-[var(--color-secondary)]/40 hover:border-[var(--color-primary)] hover:bg-white/40 rounded-2xl p-8 sm:p-12 cursor-pointer transition-all duration-300 text-center group">
                 <input
                   type="file"
                   accept="video/*,audio/*"
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="w-14 h-14 rounded-2xl bg-[#5850ec]/15 text-[#5850ec] flex items-center justify-center mb-3">
-                  <UploadCloud className="w-7 h-7" />
+                <div className="w-16 h-16 rounded-2xl bg-[var(--color-secondary-soft)] text-[var(--color-secondary)] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-[var(--color-primary-soft)] group-hover:text-[var(--color-primary)] transition-all duration-300">
+                  <UploadCloud className="w-8 h-8" />
                 </div>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-base font-bold text-[var(--color-text)]">
                   {selectedFile ? selectedFile.name : "Click to browse or drag and drop video file"}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-sm text-[var(--color-text-muted)] mt-1 font-medium">
                   MP4, MOV, MKV, MP3, WAV (up to 2 GB)
                 </p>
                 {selectedFile && (
-                  <span className="mt-3 text-xs font-medium text-emerald-400 bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Ready to process: {(selectedFile.size / (1024 * 1024)).toFixed(1)} MB
+                  <span className="mt-4 text-xs font-semibold text-[var(--color-text)] bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-[var(--color-secondary)]/30 flex items-center gap-2 shadow-sm">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--color-secondary)]" />
+                    Ready: {(selectedFile.size / (1024 * 1024)).toFixed(1)} MB
                   </span>
                 )}
               </label>
               {fileError && (
-                <p className="text-rose-400 text-xs mt-2 flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <p className="text-[var(--color-primary)] text-sm mt-2 flex items-center gap-1.5 font-medium">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{fileError}</span>
                 </p>
               )}
@@ -194,7 +195,7 @@ export const IngestPage = () => {
           {/* Tab 2: URL Fetch */}
           {activeTab === 'url' && (
             <div className="space-y-2">
-              <label htmlFor="ingest-url-input" className="block text-xs font-semibold text-slate-300">
+              <label htmlFor="ingest-url-input" className="block text-sm font-semibold text-[var(--color-text)]">
                 Paste YouTube, Zoom, or Lecture Link
               </label>
               <input
@@ -206,11 +207,11 @@ export const IngestPage = () => {
                   if (urlError) setUrlError('');
                 }}
                 placeholder="https://www.youtube.com/watch?v=..."
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-100 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                className="input-glass"
               />
               {urlError && (
-                <p className="text-rose-400 text-xs mt-1 flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <p className="text-[var(--color-primary)] text-sm mt-1 flex items-center gap-1.5 font-medium">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{urlError}</span>
                 </p>
               )}
@@ -218,63 +219,47 @@ export const IngestPage = () => {
           )}
 
           {/* Pipeline Options */}
-          <div className="space-y-3 pt-2">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <div className="space-y-4 pt-2">
+            <h3 className="text-sm font-bold text-[var(--color-text)] uppercase tracking-wider">
               Processing Pipeline
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/50 border border-slate-800 cursor-pointer hover:border-slate-700">
-                <input
-                  type="checkbox"
-                  checked={options.diarization}
-                  onChange={() => toggleOption('diarization')}
-                  className="w-4 h-4 rounded text-[#5850ec] cursor-pointer"
-                />
-                <span className="text-slate-200">Speaker Diarization & Verbatim Transcript</span>
-              </label>
-
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/50 border border-slate-800 cursor-pointer hover:border-slate-700">
-                <input
-                  type="checkbox"
-                  checked={options.summary}
-                  onChange={() => toggleOption('summary')}
-                  className="w-4 h-4 rounded text-[#5850ec] cursor-pointer"
-                />
-                <span className="text-slate-200">Executive Summary & Key Takeaways</span>
-              </label>
-
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/50 border border-slate-800 cursor-pointer hover:border-slate-700">
-                <input
-                  type="checkbox"
-                  checked={options.chapters}
-                  onChange={() => toggleOption('chapters')}
-                  className="w-4 h-4 rounded text-[#5850ec] cursor-pointer"
-                />
-                <span className="text-slate-200">Timestamped Chapter Decomposition</span>
-              </label>
-
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/50 border border-slate-800 cursor-pointer hover:border-slate-700">
-                <input
-                  type="checkbox"
-                  checked={options.flashcards}
-                  onChange={() => toggleOption('flashcards')}
-                  className="w-4 h-4 rounded text-[#5850ec] cursor-pointer"
-                />
-                <span className="text-slate-200">Flashcards & Multiple-Choice Quiz</span>
-              </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              {[
+                { key: 'diarization', label: 'Speaker Diarization & Verbatim Transcript' },
+                { key: 'summary', label: 'Executive Summary & Key Takeaways' },
+                { key: 'chapters', label: 'Timestamped Chapter Decomposition' },
+                { key: 'flashcards', label: 'Flashcards & Multiple-Choice Quiz' },
+              ].map((opt) => (
+                <label 
+                  key={opt.key} 
+                  className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all duration-300 ${
+                    options[opt.key] 
+                      ? 'bg-white/80 border-[var(--color-secondary)]/50 shadow-sm' 
+                      : 'bg-white/40 border-[var(--color-border)] hover:border-[var(--color-primary)]/40'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={options[opt.key]}
+                    onChange={() => toggleOption(opt.key)}
+                    className="w-4 h-4 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer accent-[var(--color-primary)]"
+                  />
+                  <span className="text-[var(--color-text-body)] font-medium">{opt.label}</span>
+                </label>
+              ))}
             </div>
           </div>
 
           {/* Progress bar during upload */}
           {isProcessing && (
-            <div className="space-y-2 pt-2">
-              <div className="flex justify-between text-xs font-mono text-indigo-400">
+            <div className="space-y-2 pt-2 animate-fade-in">
+              <div className="flex justify-between text-xs font-bold text-[var(--color-primary)]">
                 <span>Ingesting & Analyzing with AI...</span>
                 <span>{progress}%</span>
               </div>
-              <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+              <div className="w-full h-3 bg-white/50 rounded-full overflow-hidden border border-[var(--color-border)]">
                 <div
-                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] transition-all duration-300 shadow-md"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -282,17 +267,17 @@ export const IngestPage = () => {
           )}
 
           {/* Actions */}
-          <div className="flex justify-end pt-4 border-t border-slate-800">
+          <div className="flex justify-end pt-4 border-t border-[var(--color-border)]">
             <button
               type="button"
               disabled={(!selectedFile && !url) || isProcessing}
               onClick={handleStartIngest}
-              className="px-6 py-2.5 rounded-xl bg-[#5850ec] hover:bg-[#4f46e5] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md shadow-indigo-600/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.98] cursor-pointer"
+              className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Processing Media with AI...</span>
+                  <span>Processing Media...</span>
                 </>
               ) : (
                 <>
@@ -303,7 +288,7 @@ export const IngestPage = () => {
             </button>
           </div>
 
-        </div>
+        </motion.div>
 
       </div>
     </AppLayout>

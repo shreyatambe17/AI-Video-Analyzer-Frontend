@@ -1,18 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  CloudUpload, 
-  Film, 
-  FileText, 
-  Clock, 
-  Layers, 
-  Bookmark, 
+import {
+  CloudUpload,
+  Film,
+  FileText,
+  Clock,
+  Layers,
+  Bookmark,
   Settings,
-  Download
+  Download,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { MOCK_USER } from '../../data/mockData';
 
-export const Sidebar = () => {
+export const Sidebar = ({ collapsed = false }) => {
   const location = useLocation();
 
   const navItems = [
@@ -33,9 +34,13 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside className="w-56 shrink-0 bg-[#111625] border-r border-slate-800/80 flex flex-col justify-between py-5 px-3 min-h-[calc(100vh-57px)]">
+    <aside
+      className={`glass-strong h-[calc(100vh-64px)] sticky top-16 flex flex-col justify-between py-5 px-3 transition-all duration-300 ${
+        collapsed ? 'w-20' : 'w-64'
+      }`}
+    >
       {/* Top Sidebar Links */}
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {navItems.map((item) => {
           const active = isItemActive(item.path);
           const Icon = item.icon;
@@ -43,46 +48,64 @@ export const Sidebar = () => {
             <Link
               key={item.label}
               to={item.path}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              title={collapsed ? item.label : ''}
+              className={`group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 ${
                 active
-                  ? 'bg-[#5850ec] text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
+                  ? 'brand-gradient text-white shadow-lg glow-red'
+                  : 'text-[var(--color-text-body)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)]'
+              } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-slate-400'}`} />
-              <span>{item.label}</span>
+              <Icon
+                className={`w-4 h-4 shrink-0 ${
+                  active ? 'text-white' : 'text-[var(--color-secondary)] group-hover:text-[var(--color-primary)]'
+                }`}
+              />
+              {!collapsed && <span className="truncate">{item.label}</span>}
+
+              {/* Tooltip when collapsed */}
+              {collapsed && (
+                <span className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-[var(--color-text)] text-white text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 z-50">
+                  {item.label}
+                </span>
+              )}
             </Link>
           );
         })}
       </div>
 
-      {/* Bottom Profile / Quick Action Card (Matching Screen 9) */}
-      <div className="pt-4 border-t border-slate-800/70 space-y-3">
+      {/* Bottom Profile / Quick Action Card */}
+      <div className={`pt-4 border-t border-[var(--color-border)] space-y-3 ${collapsed ? 'flex flex-col items-center' : ''}`}>
         <Link
           to="/settings"
-          className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800/70 border border-slate-800 transition-colors"
+          title={collapsed ? MOCK_USER.name : ''}
+          className={`flex items-center gap-2.5 p-2 rounded-xl glass-card hover:scale-[1.02] transition-transform ${
+            collapsed ? 'justify-center' : ''
+          }`}
         >
-          <img 
-            src={MOCK_USER.avatar} 
-            alt={MOCK_USER.name} 
-            className="w-8 h-8 rounded-full object-cover ring-1 ring-slate-700"
+          <img
+            src={MOCK_USER.avatar}
+            alt={MOCK_USER.name}
+            className="w-9 h-9 rounded-full object-cover ring-2 ring-[var(--color-primary)]/40 shrink-0"
           />
-          <div className="overflow-hidden">
-            <p className="text-xs font-semibold text-white truncate">{MOCK_USER.name}</p>
-            <p className="text-[10px] text-slate-400 truncate">{MOCK_USER.role}</p>
-          </div>
+          {!collapsed && (
+            <div className="overflow-hidden">
+              <p className="text-xs font-semibold text-[var(--color-text)] truncate">{MOCK_USER.name}</p>
+              <p className="text-[10px] text-[var(--color-text-muted)] truncate">{MOCK_USER.role}</p>
+            </div>
+          )}
         </Link>
 
         <Link
           to="/export"
-          className={`w-full py-2 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-all ${
+          title={collapsed ? 'Export PDF' : ''}
+          className={`w-full py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
             location.pathname === '/export'
-              ? 'bg-[#5850ec] text-white shadow-md shadow-indigo-600/30'
-              : 'bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 border border-indigo-500/30'
+              ? 'brand-gradient text-white shadow-lg glow-red'
+              : 'bg-[var(--color-primary-soft)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white border border-[var(--color-primary)]/30'
           }`}
         >
-          <Download className="w-3.5 h-3.5" />
-          <span>Export PDF</span>
+          <Download className="w-4 h-4 shrink-0" />
+          {!collapsed && <span>Export PDF</span>}
         </Link>
       </div>
     </aside>

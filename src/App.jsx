@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage';
 import IngestPage from './pages/IngestPage';
 import SummariesPage from './pages/SummariesPage';
@@ -12,44 +12,47 @@ import ExportReportPage from './pages/ExportReportPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
+// ✅ Protected Route Wrapper
+const ProtectedRoute = () => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
+// ✅ Public Route (agar already login hai, toh direct dashboard bhejo)
+const PublicRoute = () => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
+};
+
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 1. Login & Registration */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        {/* 🌐 PUBLIC ROUTES (Sirf login page ke liye) */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Route>
 
-        {/* 2. My Media (Workspace Dashboard) */}
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/media" element={<DashboardPage />} />
+        {/* 🔒 PROTECTED ROUTES (Login ke baad hi accessible) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/media" element={<DashboardPage />} />
+          <Route path="/summaries" element={<SummariesPage />} />
+          <Route path="/chat" element={<ChatVideoPage />} />
+          <Route path="/notes" element={<SummaryNotesPage />} />
+          <Route path="/summary" element={<SummaryNotesPage />} />
+          <Route path="/quiz" element={<FlashcardsQuizPage />} />
+          <Route path="/flashcards" element={<FlashcardsQuizPage />} />
+          <Route path="/history" element={<HistorySavedPage />} />
+          <Route path="/saved" element={<HistorySavedPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/export" element={<ExportReportPage />} />
+          <Route path="/ingest" element={<IngestPage />} />
+        </Route>
 
-        {/* 3. Summaries Page */}
-        <Route path="/summaries" element={<SummariesPage />} />
-
-        {/* 4. Chat & Video Page */}
-        <Route path="/chat" element={<ChatVideoPage />} />
-
-        {/* 5. Notes & Chapters Page */}
-        <Route path="/notes" element={<SummaryNotesPage />} />
-        <Route path="/summary" element={<SummaryNotesPage />} />
-
-        {/* 6. Flashcards & Quiz Page */}
-        <Route path="/quiz" element={<FlashcardsQuizPage />} />
-        <Route path="/flashcards" element={<FlashcardsQuizPage />} />
-
-        {/* 7. History and Saved Page */}
-        <Route path="/history" element={<HistorySavedPage />} />
-        <Route path="/saved" element={<HistorySavedPage />} />
-
-        {/* 8. Settings Page */}
-        <Route path="/settings" element={<SettingsPage />} />
-
-        {/* 9. Export PDF Page */}
-        <Route path="/export" element={<ExportReportPage />} />
-
-        {/* Ingest / Upload */}
-        <Route path="/ingest" element={<IngestPage />} />
+        {/* 🚫 Fallback (galat URL par redirect) */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,27 +1,76 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  Play, 
-  LayoutDashboard, 
-  UploadCloud, 
-  MessageSquare, 
-  FileText, 
-  HelpCircle, 
-  Download, 
-  Bell, 
-  Menu, 
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Play,
+  LayoutDashboard,
+  UploadCloud,
+  MessageSquare,
+  FileText,
+  HelpCircle,
+  Download,
+  Bell,
+  Menu,
   X,
   History,
   Bookmark,
   Settings,
   LogOut,
-  User
+  PanelLeftClose,
+  PanelLeftOpen,
+  CheckCircle2,
+  Sparkles,
+  Info,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MOCK_USER } from '../../data/mockData';
 
-export const Navbar = () => {
+export const Navbar = ({ sidebarCollapsed = false, onToggleSidebar }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // 🔔 Notification States
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
+  const notifRef = useRef(null);
+
+  // Notifications Data
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'Video Processing Complete', desc: 'Your lecture "Stanford AI" is ready.', time: '2 min ago', icon: CheckCircle2, color: 'text-emerald-500' },
+    { id: 2, title: 'Summary Generated', desc: 'Flashcards and quiz are now available.', time: '1 hr ago', icon: Sparkles, color: 'text-[var(--color-primary)]' },
+    { id: 3, title: 'System Update', desc: 'New UI theme applied successfully.', time: '2 hrs ago', icon: Info, color: 'text-[var(--color-secondary)]' },
+  ]);
+
+  // Close menus on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setNotificationsOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
+  // 👆 Close notification dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleMarkAllRead = () => setHasUnread(false);
+
+  // 🚪 LOGOUT FUNCTIONALITY
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
 
   const isActive = (path) => {
     if (path === '/' && (location.pathname === '/' || location.pathname === '/media')) return true;
@@ -45,20 +94,31 @@ export const Navbar = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200/90 shadow-xs">
-      <div className="w-full px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4">
-        
-        {/* Brand Logo matching reference */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 rounded-xl bg-[#5850ec] flex items-center justify-center text-white shadow-sm shadow-indigo-500/30 group-hover:bg-[#4f46e5] transition-all">
-            <Play className="w-4 h-4 fill-white ml-0.5" />
-          </div>
-          <span className="font-bold text-base tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
-            AI Video Summarizer
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 glass-strong border-b border-[var(--color-border-blue)]">
+      <div className="w-full px-4 lg:px-6 h-16 flex items-center justify-between gap-4">
 
-        {/* Center Navigation Links (Top Bar matching reference image) */}
+        {/* LEFT: Sidebar toggle + Brand */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            aria-label="Toggle sidebar"
+            className="hidden lg:flex items-center justify-center w-9 h-9 rounded-xl text-[var(--color-text-body)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] transition-all"
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+          </button>
+
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white shadow-md glow-red group-hover:scale-105 transition-transform">
+              <Play className="w-4 h-4 fill-white ml-0.5" />
+            </div>
+            <span className="font-bold text-base tracking-tight gradient-text hidden sm:inline">
+              AI Video Summarizer
+            </span>
+          </Link>
+        </div>
+
+        {/* CENTER: Nav links (desktop) */}
         <nav className="hidden xl:flex items-center gap-1.5">
           {navLinks.map((item) => {
             const active = isActive(item.path);
@@ -69,136 +129,183 @@ export const Navbar = () => {
                 to={item.path}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
                   active
-                    ? 'bg-indigo-50 text-[#5850ec] border border-indigo-200/60 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                    ? 'bg-[var(--color-primary-soft)] text-[var(--color-primary)] border border-[var(--color-primary)]/30 shadow-sm font-semibold'
+                    : 'text-[var(--color-text-body)] hover:text-[var(--color-primary)] hover:bg-white/60'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#5850ec]' : 'text-slate-400'}`} />
+                <Icon className={`w-3.5 h-3.5 ${active ? 'text-[var(--color-primary)]' : 'text-[var(--color-secondary)]'}`} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Section: Notifications & User Profile */}
+        {/* RIGHT: Notifications + Profile + Mobile toggle */}
         <div className="flex items-center gap-3 shrink-0">
           
-          {/* Notification Bell */}
-          <button 
-            type="button" 
-            aria-label="Notifications"
-            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-          >
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#5850ec] ring-2 ring-white" />
-          </button>
+          {/* 🔔 NOTIFICATION BELL */}
+          <div className="relative" ref={notifRef}>
+            <button
+              type="button"
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              aria-label="Notifications"
+              className={`relative p-2 rounded-lg transition-colors ${
+                notificationsOpen ? 'bg-[var(--color-primary-soft)] text-[var(--color-primary)]' : 'text-[var(--color-text-body)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)]'
+              }`}
+            >
+              <Bell className="w-4 h-4" />
+              {hasUnread && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--color-primary)] ring-2 ring-white animate-pulse" />
+              )}
+            </button>
 
-          {/* User Profile Pill */}
-          <Link 
-            to="/settings" 
-            className="flex items-center gap-2.5 pl-2 border-l border-slate-200 hover:opacity-90 transition-opacity"
+            <AnimatePresence>
+              {notificationsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-2 w-80 sm:w-96 glass-strong rounded-2xl shadow-2xl border border-[var(--color-border)] overflow-hidden z-50"
+                >
+                  <div className="p-4 border-b border-[var(--color-border)] flex items-center justify-between bg-white/40">
+                    <h3 className="font-bold text-[var(--color-text)] text-sm">Notifications</h3>
+                    {hasUnread && (
+                      <button onClick={handleMarkAllRead} className="text-xs font-semibold text-[var(--color-primary)] hover:underline">
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.map((notif) => {
+                      const Icon = notif.icon;
+                      return (
+                        <div key={notif.id} className="p-4 border-b border-[var(--color-border)]/50 hover:bg-white/60 transition-colors cursor-pointer flex gap-3">
+                          <div className={`mt-0.5 ${notif.color}`}>
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-[var(--color-text)]">{notif.title}</p>
+                            <p className="text-xs text-[var(--color-text-body)] mt-0.5 leading-relaxed">{notif.desc}</p>
+                            <p className="text-[10px] font-medium text-[var(--color-text-muted)] mt-1.5">{notif.time}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="p-3 border-t border-[var(--color-border)] bg-white/40 text-center">
+                    <button className="text-xs font-bold text-[var(--color-secondary)] hover:text-[var(--color-primary)] transition-colors">
+                      View All Notifications
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <Link
+            to="/settings"
+            className="flex items-center gap-2.5 pl-2 border-l border-[var(--color-border)] hover:opacity-90 transition-opacity"
           >
-            <img 
-              src={MOCK_USER.avatar} 
-              alt={MOCK_USER.name} 
-              className="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200"
+            <img
+              src={MOCK_USER.avatar}
+              alt={MOCK_USER.name}
+              className="w-8 h-8 rounded-full object-cover ring-2 ring-[var(--color-secondary)]/40"
             />
             <div className="hidden sm:block text-left text-xs leading-tight">
-              <p className="font-semibold text-slate-900">{MOCK_USER.name}</p>
-              <p className="text-[11px] text-slate-500">{MOCK_USER.role}</p>
+              <p className="font-semibold text-[var(--color-text)]">{MOCK_USER.name}</p>
+              <p className="text-[11px] text-[var(--color-text-muted)]">{MOCK_USER.role}</p>
             </div>
           </Link>
 
-          {/* Mobile Menu Toggle */}
+          {/* Desktop Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="hidden sm:flex items-center justify-center w-9 h-9 rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] transition-all"
+            title="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+
           <button
             type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            className="xl:hidden p-2 rounded-lg text-[var(--color-text-body)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] transition-colors"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
-
       </div>
 
       {/* Mobile Navigation Dropdown */}
-      {mobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-slate-200 px-4 py-3 space-y-3 shadow-lg">
-          
-          {/* User Header in mobile menu */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <img 
-                src={MOCK_USER.avatar} 
-                alt={MOCK_USER.name} 
-                className="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200"
-              />
-              <div>
-                <p className="text-xs font-bold text-slate-900">{MOCK_USER.name}</p>
-                <p className="text-[11px] text-slate-500">{MOCK_USER.email}</p>
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="xl:hidden glass-strong border-t border-[var(--color-border)] px-4 py-3 space-y-3 shadow-xl overflow-hidden max-h-[calc(100vh-64px)] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
+              <div className="flex items-center gap-2.5">
+                <img src={MOCK_USER.avatar} alt={MOCK_USER.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-[var(--color-primary)]/40" />
+                <div>
+                  <p className="text-xs font-bold text-[var(--color-text)]">{MOCK_USER.name}</p>
+                  <p className="text-[11px] text-[var(--color-text-muted)]">{MOCK_USER.email}</p>
+                </div>
               </div>
+              
+              {/* Mobile Logout Button */}
+              <button 
+                onClick={handleLogout} 
+                className="text-xs font-semibold text-[var(--color-primary)] hover:underline flex items-center gap-1"
+              >
+                <LogOut className="w-3.5 h-3.5" /> Logout
+              </button>
             </div>
-            <Link
-              to="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Sign in
-            </Link>
-          </div>
 
-          {/* Main nav items */}
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2">Navigation</span>
-            {navLinks.map((item) => {
-              const active = isActive(item.path);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`w-full px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors ${
-                    active
-                      ? 'bg-indigo-50 text-[#5850ec] font-semibold'
-                      : 'text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${active ? 'text-[#5850ec]' : 'text-slate-400'}`} />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] px-2">Navigation</span>
+              {navLinks.map((item) => {
+                const active = isActive(item.path);
+                const Icon = item.icon;
+                return (
+                  <Link key={item.path} to={item.path}
+                    className={`w-full px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors ${
+                      active ? 'bg-[var(--color-primary-soft)] text-[var(--color-primary)] font-semibold' : 'text-[var(--color-text-body)] hover:bg-white/60'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${active ? 'text-[var(--color-primary)]' : 'text-[var(--color-secondary)]'}`} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
 
-          {/* Extra tools */}
-          <div className="space-y-1 pt-2 border-t border-slate-100">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2">Quick Access</span>
-            {additionalMobileLinks.map((item) => {
-              const active = isActive(item.path);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`w-full px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors ${
-                    active
-                      ? 'bg-indigo-50 text-[#5850ec] font-semibold'
-                      : 'text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${active ? 'text-[#5850ec]' : 'text-slate-400'}`} />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-
-        </div>
-      )}
+            <div className="space-y-1 pt-2 border-t border-[var(--color-border)]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] px-2">Quick Access</span>
+              {additionalMobileLinks.map((item) => {
+                const active = isActive(item.path);
+                const Icon = item.icon;
+                return (
+                  <Link key={item.path} to={item.path}
+                    className={`w-full px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors ${
+                      active ? 'bg-[var(--color-primary-soft)] text-[var(--color-primary)] font-semibold' : 'text-[var(--color-text-body)] hover:bg-white/60'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${active ? 'text-[var(--color-primary)]' : 'text-[var(--color-secondary)]'}`} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
