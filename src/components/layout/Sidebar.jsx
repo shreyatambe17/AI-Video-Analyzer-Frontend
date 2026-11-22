@@ -11,10 +11,14 @@ import {
   Download,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { MOCK_USER } from '../../data/mockData';
+import { MOCK_USER } from '../../data/mockData'; // Fallback ke liye
 
 export const Sidebar = ({ collapsed = false }) => {
   const location = useLocation();
+
+  // ✅ Fetch real user from local storage
+  const savedUser = localStorage.getItem('user');
+  const currentUser = savedUser ? JSON.parse(savedUser) : MOCK_USER;
 
   const navItems = [
     { label: 'Ingest Media', path: '/ingest', icon: CloudUpload },
@@ -77,20 +81,20 @@ export const Sidebar = ({ collapsed = false }) => {
       <div className={`pt-4 border-t border-[var(--color-border)] space-y-3 ${collapsed ? 'flex flex-col items-center' : ''}`}>
         <Link
           to="/settings"
-          title={collapsed ? MOCK_USER.name : ''}
+          title={collapsed ? currentUser.name : ''}
           className={`flex items-center gap-2.5 p-2 rounded-xl glass-card hover:scale-[1.02] transition-transform ${
             collapsed ? 'justify-center' : ''
           }`}
         >
           <img
-            src={MOCK_USER.avatar}
-            alt={MOCK_USER.name}
+            src={currentUser.avatar}
+            alt={currentUser.name}
             className="w-9 h-9 rounded-full object-cover ring-2 ring-[var(--color-primary)]/40 shrink-0"
           />
           {!collapsed && (
             <div className="overflow-hidden">
-              <p className="text-xs font-semibold text-[var(--color-text)] truncate">{MOCK_USER.name}</p>
-              <p className="text-[10px] text-[var(--color-text-muted)] truncate">{MOCK_USER.role}</p>
+              <p className="text-xs font-semibold text-[var(--color-text)] truncate">{currentUser.name}</p>
+              <p className="text-[10px] text-[var(--color-text-muted)] truncate">{currentUser.role}</p>
             </div>
           )}
         </Link>
