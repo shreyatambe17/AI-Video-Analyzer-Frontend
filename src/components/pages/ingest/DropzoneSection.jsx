@@ -4,7 +4,7 @@ import { Upload, Radar, FolderPlus, FileCheck } from 'lucide-react';
 export const DropzoneSection = ({ onFileSelected, selectedFile }) => {
   const [isDragging, setIsDragging] = useState(false);
 
-  const supportedFormats = ['MP4', 'MKV', 'WAV 96kHz', 'FLAC 24-bit', 'AAC', 'WEBM'];
+  const supportedFormats = ['MP4', 'MKV', 'WAV', 'FLAC', 'AAC', 'WEBM'];
 
   const handleSimulatedUpload = (e) => {
     const file = e.target.files?.[0];
@@ -33,47 +33,44 @@ export const DropzoneSection = ({ onFileSelected, selectedFile }) => {
             codec: 'H.265 / 4K',
           });
         }}
-        className={`relative border-2 border-dashed rounded-2xl p-8 lg:p-12 text-center transition-all duration-300 backdrop-blur-md ${
+        className={`relative border-2 border-dashed rounded-2xl p-8 lg:p-12 text-center transition-all duration-300 ${
           isDragging 
-            ? 'border-cyan-400 bg-cyan-950/40 shadow-xl shadow-cyan-500/20' 
-            : 'border-cyan-500/30 bg-[#0b0e17]/80 hover:border-cyan-500/50 hover:bg-[#0d121f]'
+            ? 'border-[var(--color-primary)] bg-[var(--color-primary-soft)]/50 shadow-xl shadow-[var(--color-primary)]/20 scale-[1.01]' 
+            : 'border-[var(--color-secondary)]/40 bg-white/50 hover:border-[var(--color-secondary)] hover:bg-white/70'
         }`}
       >
-        {/* Radar Icon graphic */}
-        <div className="w-16 h-16 mx-auto rounded-full bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center relative mb-4 group shadow-lg shadow-cyan-500/20">
-          <div className="absolute inset-0 rounded-full border border-cyan-400/40 animate-ping opacity-50" />
-          <Radar className="w-8 h-8 text-cyan-400 group-hover:scale-110 transition-transform" />
+        <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[var(--color-secondary)]/40 flex items-center justify-center relative mb-4 group shadow-lg shadow-[var(--color-secondary)]/10">
+          <div className="absolute inset-0 rounded-full border border-[var(--color-secondary)]/40 animate-ping opacity-50" />
+          <Radar className="w-8 h-8 text-[var(--color-secondary)] group-hover:scale-110 transition-transform" />
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
-          DROP VIDEO/AUDIO PAYLOAD
+        <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)] tracking-wide">
+          DROP VIDEO / AUDIO PAYLOAD
         </h2>
-        <p className="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1">
+        <p className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest mt-1">
           OR BROWSE HOST FILESYSTEM
         </p>
 
-        {/* Action Button */}
         <div className="mt-5">
-          <label className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-semibold cursor-pointer shadow-md hover:shadow-cyan-500/20 transition-all">
-            <FolderPlus className="w-4 h-4 text-cyan-400" />
+          <label className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white hover:bg-[var(--color-primary-soft)] border border-[var(--color-primary)]/30 text-[var(--color-primary)] text-sm font-semibold cursor-pointer shadow-sm hover:shadow-md transition-all">
+            <FolderPlus className="w-4 h-4" />
             <span>SELECT LOCAL MEDIA</span>
             <input type="file" accept="video/*,audio/*" onChange={handleSimulatedUpload} className="hidden" />
           </label>
         </div>
 
-        {/* Supported Formats */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
           {supportedFormats.map((fmt) => (
             <span
               key={fmt}
-              className="px-2.5 py-1 rounded bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-cyan-400 font-semibold"
+              className="px-2.5 py-1 rounded-md bg-white/80 border border-[var(--color-border)] text-[11px] font-bold text-[var(--color-text-body)] shadow-sm"
             >
-              [{fmt}]
+              {fmt}
             </span>
           ))}
         </div>
 
-        <p className="text-[11px] font-mono text-slate-500 mt-4 uppercase">
+        <p className="text-[11px] font-semibold text-[var(--color-text-muted)] mt-4 uppercase">
           [MAX_PAYLOAD: 4.0 GB // MAX_DURATION: 8.5 HRS]
         </p>
       </div>
