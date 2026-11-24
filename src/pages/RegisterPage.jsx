@@ -48,7 +48,6 @@ export const RegisterPage = () => {
       setIsSubmitting(false);
       localStorage.setItem('isAuthenticated', 'true');
       
-      // ✅ Save New User Data
       const userData = {
         name: fullName,
         email: email,
@@ -80,7 +79,7 @@ export const RegisterPage = () => {
             <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">Full Name</label>
             <div className="relative">
               <User className="w-4 h-4 text-[var(--color-text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className={`input-glass pl-10 ${touched.fullName && errors.fullName ? 'border-[var(--color-primary)]' : ''}`} placeholder="John Doe" />
+              <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className={`input-glass ${touched.fullName && errors.fullName ? 'border-[var(--color-primary)]' : ''}`} placeholder="John Doe" />
             </div>
             {touched.fullName && errors.fullName && <p className="text-[var(--color-primary)] text-xs mt-1 font-medium">{errors.fullName}</p>}
           </div>
@@ -89,7 +88,7 @@ export const RegisterPage = () => {
             <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">Email</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-[var(--color-text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`input-glass pl-10 ${touched.email && errors.email ? 'border-[var(--color-primary)]' : ''}`} placeholder="john@example.com" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`input-glass ${touched.email && errors.email ? 'border-[var(--color-primary)]' : ''}`} placeholder="john@example.com" />
             </div>
             {touched.email && errors.email && <p className="text-[var(--color-primary)] text-xs mt-1 font-medium">{errors.email}</p>}
           </div>
@@ -98,7 +97,7 @@ export const RegisterPage = () => {
             <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">Password</label>
             <div className="relative">
               <Lock className="w-4 h-4 text-[var(--color-text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className={`input-glass pl-10 pr-10 ${touched.password && errors.password ? 'border-[var(--color-primary)]' : ''}`} placeholder="At least 8 characters" />
+              <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className={`input-glass pr-10 ${touched.password && errors.password ? 'border-[var(--color-primary)]' : ''}`} placeholder="At least 8 characters" />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>

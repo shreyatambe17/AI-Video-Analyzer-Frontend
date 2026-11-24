@@ -3,24 +3,24 @@
 @layer base {
   :root {
     /* 🎨 Brand Colors — Light Red + Sky Blue + White */
-    --color-primary: #FF6B6B;          /* Light Red */
+    --color-primary: #FF6B6B;
     --color-primary-hover: #FF5252;
     --color-primary-soft: #FFE5E5;
     --color-primary-glow: rgba(255, 107, 107, 0.25);
 
-    --color-secondary: #4FACFE;        /* Sky Blue */
+    --color-secondary: #4FACFE;
     --color-secondary-hover: #2E9BFF;
     --color-secondary-soft: #E0F4FF;
     --color-secondary-glow: rgba(79, 172, 254, 0.25);
 
-    --color-accent: #FF8FA3;           /* Soft pink accent */
+    --color-accent: #FF8FA3;
     --color-white: #FFFFFF;
-    --color-bg: #F8FAFF;               /* Very light blue-white */
+    --color-bg: #F8FAFF;
     --color-surface: #FFFFFF;
 
-    --color-text: #1E293B;             /* Dark navy — headings */
-    --color-text-body: #475569;        /* Body text */
-    --color-text-muted: #94A3B8;       /* Muted */
+    --color-text: #1E293B;
+    --color-text-body: #475569;
+    --color-text-muted: #94A3B8;
     --color-border: rgba(255, 107, 107, 0.15);
     --color-border-blue: rgba(79, 172, 254, 0.15);
 
@@ -31,13 +31,11 @@
     --glass-shadow: 0 8px 32px rgba(255, 107, 107, 0.12);
     --glass-shadow-blue: 0 8px 32px rgba(79, 172, 254, 0.12);
 
-    /* 🎯 Radius */
     --radius-sm: 10px;
     --radius-md: 16px;
     --radius-lg: 20px;
     --radius-xl: 28px;
 
-    /* 📐 Transitions */
     --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -62,7 +60,6 @@
     letter-spacing: -0.02em;
   }
 
-  /* 🖱️ Scrollbars */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.3); }
   ::-webkit-scrollbar-thumb {
@@ -73,7 +70,6 @@
     background: linear-gradient(180deg, #FF5252, #2E9BFF);
   }
 
-  /* 🔤 Selection */
   ::selection {
     background: rgba(255, 107, 107, 0.25);
     color: var(--color-text);
@@ -81,10 +77,9 @@
 }
 
 /* ═══════════════════════════════════════════ */
-/* 🧊 UTILITY CLASSES — Glassmorphism & Brand   */
+/* 🧊 UTILITY CLASSES                         */
 /* ═══════════════════════════════════════════ */
 
-/* Glass Card */
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: blur(16px) saturate(180%);
@@ -99,7 +94,6 @@
   box-shadow: 0 12px 40px rgba(255, 107, 107, 0.18);
 }
 
-/* Glass Strong (sidebar, navbar) */
 .glass-strong {
   background: var(--glass-bg-strong);
   backdrop-filter: blur(20px) saturate(200%);
@@ -108,7 +102,6 @@
   box-shadow: 0 4px 24px rgba(79, 172, 254, 0.10);
 }
 
-/* Gradient text */
 .gradient-text {
   background: linear-gradient(135deg, #FF6B6B 0%, #4FACFE 100%);
   -webkit-background-clip: text;
@@ -116,21 +109,17 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Brand gradient bg */
 .brand-gradient {
   background: linear-gradient(135deg, #FF6B6B 0%, #FF8FA3 50%, #4FACFE 100%);
 }
 
-/* Soft gradient bg */
 .soft-gradient {
   background: linear-gradient(135deg, #FFE5E5 0%, #E0F4FF 100%);
 }
 
-/* Glow effects */
 .glow-red { box-shadow: 0 4px 20px -2px rgba(255, 107, 107, 0.35); }
 .glow-blue { box-shadow: 0 4px 20px -2px rgba(79, 172, 254, 0.35); }
 
-/* Primary button */
 .btn-primary {
   background: linear-gradient(135deg, #FF6B6B 0%, #FF8FA3 100%);
   color: #FFFFFF;
@@ -148,7 +137,6 @@
 }
 .btn-primary:active { transform: translateY(0); }
 
-/* Secondary button */
 .btn-secondary {
   background: linear-gradient(135deg, #4FACFE 0%, #2E9BFF 100%);
   color: #FFFFFF;
@@ -165,7 +153,6 @@
   box-shadow: 0 6px 24px rgba(79, 172, 254, 0.45);
 }
 
-/* Ghost button */
 .btn-ghost {
   background: rgba(255, 255, 255, 0.6);
   color: var(--color-text);
@@ -181,12 +168,12 @@
   border-color: rgba(255, 107, 107, 0.4);
 }
 
-/* Input fields */
+/* ✅ UPDATED: Input field me icon ke liye left padding fix */
 .input-glass {
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
-  padding: 12px 16px;
+  padding: 12px 16px 12px 42px; /* Left padding 42px (icon ke liye jagah) */
   color: var(--color-text);
   transition: all var(--transition);
   outline: none;
@@ -203,42 +190,13 @@
 /* ✨ ANIMATIONS                              */
 /* ═══════════════════════════════════════════ */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-24px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(24px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.25); }
-  50% { box-shadow: 0 0 32px rgba(255, 107, 107, 0.45); }
-}
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-@keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.25); } 50% { box-shadow: 0 0 32px rgba(255, 107, 107, 0.45); } }
 
 .animate-fade-in    { animation: fadeIn 0.5s ease-out both; }
 .animate-slide-up   { animation: slideUp 0.5s ease-out both; }
@@ -247,40 +205,27 @@
 .animate-slide-right{ animation: slideInRight 0.4s ease-out both; }
 .animate-float      { animation: float 3s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
-.animate-spin-slow  { animation: spinSlow 8s linear infinite; }
 
-/* Stagger delays */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
 
-/* ═══════════════════════════════════════════ */
-/* 📱 RESPONSIVE HELPERS                      */
-/* ═══════════════════════════════════════════ */
-
 @media (max-width: 768px) {
   body { font-size: 14px; }
   .glass-card { border-radius: var(--radius-md); }
 }
 
-/* Reduced motion (accessibility) */
+/* 3D Flashcard Flip Utilities */
+.perspective-1000 { perspective: 1000px; }
+.preserve-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-/* 3D Flashcard Flip Utilities */
-.perspective-1000 {
-  perspective: 1000px;
-}
-.preserve-3d {
-  transform-style: preserve-3d;
-}
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
