@@ -1,29 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  User, 
-  Sliders, 
-  Globe, 
-  Bell, 
-  Shield, 
-  Camera, 
-  Check, 
-  AlertCircle, 
-  Loader2, 
-  CheckCircle2
+  User, Sliders, Globe, Bell, Shield, Camera, Check, AlertCircle, 
+  Loader2, CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '../components/layout/AppLayout';
 import { MOCK_USER } from '../data/mockData';
-import { api } from '../services/api';
 
 export const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile'); 
   const fileInputRef = useRef(null);
 
-  const [avatar, setAvatar] = useState(MOCK_USER.avatar);
-  const [fullName, setFullName] = useState(MOCK_USER.name);
-  const [email, setEmail] = useState(MOCK_USER.email);
-  const [role, setRole] = useState(MOCK_USER.role);
+  // ✅ LocalStorage se real user data fetch karein
+  const savedUser = localStorage.getItem('user');
+  const initialUser = savedUser ? JSON.parse(savedUser) : MOCK_USER;
+
+  const [avatar, setAvatar] = useState(initialUser.avatar || MOCK_USER.avatar);
+  const [fullName, setFullName] = useState(initialUser.name || MOCK_USER.name);
+  const [email, setEmail] = useState(initialUser.email || MOCK_USER.email);
+  const [role, setRole] = useState(initialUser.role || MOCK_USER.role);
   
   const [touched, setTouched] = useState({ fullName: false, email: false });
   const [errors, setErrors] = useState({ fullName: '', email: '' });
@@ -32,7 +27,7 @@ export const SettingsPage = () => {
 
   const [autoSummary, setAutoSummary] = useState(true);
   const [highQualityAudio, setHighQualityAudio] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
 
   const [emailNotify, setEmailNotify] = useState(true);
   const [processingDoneNotify, setProcessingDoneNotify] = useState(true);
@@ -43,17 +38,6 @@ export const SettingsPage = () => {
   const [passError, setPassError] = useState('');
   const [passSuccess, setPassSuccess] = useState(false);
   const [isChangingPass, setIsChangingPass] = useState(false);
-
-  useEffect(() => {
-    api.getUserProfile().then(user => {
-      if (user) {
-        if (user.name) setFullName(user.name);
-        if (user.email) setEmail(user.email);
-        if (user.role) setRole(user.role);
-        if (user.avatar) setAvatar(user.avatar);
-      }
-    });
-  }, []);
 
   const subTabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -81,7 +65,7 @@ export const SettingsPage = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => { setAvatar(reader.result); MOCK_USER.avatar = reader.result; };
+      reader.onload = () => setAvatar(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -95,13 +79,21 @@ export const SettingsPage = () => {
     if (nErr || eErr) return;
 
     setIsSaving(true);
-    try {
-      await api.updateUserProfile({ name: fullName, email, role, avatar });
+    
+    // ✅ Naya data LocalStorage me save karein
+    setTimeout(() => {
+      const updatedUser = { ...initialUser, name: fullName, email, role, avatar };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
       setSavedSuccess(true);
-      api.addHistory({ title: 'Updated user profile settings', type: 'upload', color: 'cyan' });
-      setTimeout(() => setSavedSuccess(false), 2500);
-    } catch (err) { console.error('Failed to update profile:', err); } 
-    finally { setIsSaving(false); }
+      setIsSaving(false);
+      
+      // Navbar/Sidebar ko refresh karne ke liye page reload karein (optional)
+      setTimeout(() => {
+        setSavedSuccess(false);
+        window.location.reload(); 
+      }, 1500);
+    }, 800);
   };
 
   const handleChangePassword = async (e) => {
@@ -112,19 +104,17 @@ export const SettingsPage = () => {
 
     setPassError('');
     setIsChangingPass(true);
-    try {
-      await api.changePassword(currentPass, newPass);
+    setTimeout(() => {
       setPassSuccess(true); setCurrentPass(''); setNewPass(''); setConfirmPass('');
+      setIsChangingPass(false);
       setTimeout(() => setPassSuccess(false), 3000);
-    } catch (err) { setPassError(err.message || 'Password update failed.'); } 
-    finally { setIsChangingPass(false); }
+    }, 800);
   };
 
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
         
-        {/* Header */}
         <div>
           <h1 className="text-3xl font-extrabold text-[var(--color-text)] tracking-tight">Settings</h1>
           <p className="text-sm text-[var(--color-text-body)] mt-1">Manage your account and preferences.</p>
@@ -159,7 +149,7 @@ export const SettingsPage = () => {
           <div className="md:col-span-8 glass-card p-5 sm:p-7 shadow-lg min-h-[500px]">
             <AnimatePresence mode="wait">
               
-              {/* SUB-TAB 1: PROFILE */}
+              {/* PROFILE */}
               {activeTab === 'profile' && (
                 <motion.form key="profile" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} onSubmit={handleSaveProfile} noValidate className="space-y-6">
                   <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
@@ -186,7 +176,7 @@ export const SettingsPage = () => {
                         value={fullName}
                         onChange={(e) => { setFullName(e.target.value); if (touched.fullName) setErrors(prev => ({ ...prev, fullName: validateName(e.target.value) })); }}
                         onBlur={() => handleBlur('fullName')}
-                        className={`input-glass ${touched.fullName && errors.fullName ? 'border-[var(--color-primary)] focus:ring-[var(--color-primary)]/30' : ''}`}
+                        className={`input-glass ${touched.fullName && errors.fullName ? 'border-[var(--color-primary)]' : ''}`}
                       />
                       {touched.fullName && errors.fullName && <p className="text-[var(--color-primary)] text-xs mt-1 flex items-center gap-1 font-medium"><AlertCircle className="w-3 h-3" />{errors.fullName}</p>}
                     </div>
@@ -197,7 +187,7 @@ export const SettingsPage = () => {
                         value={email}
                         onChange={(e) => { setEmail(e.target.value); if (touched.email) setErrors(prev => ({ ...prev, email: validateEmail(e.target.value) })); }}
                         onBlur={() => handleBlur('email')}
-                        className={`input-glass ${touched.email && errors.email ? 'border-[var(--color-primary)] focus:ring-[var(--color-primary)]/30' : ''}`}
+                        className={`input-glass ${touched.email && errors.email ? 'border-[var(--color-primary)]' : ''}`}
                       />
                       {touched.email && errors.email && <p className="text-[var(--color-primary)] text-xs mt-1 flex items-center gap-1 font-medium"><AlertCircle className="w-3 h-3" />{errors.email}</p>}
                     </div>
@@ -219,7 +209,7 @@ export const SettingsPage = () => {
                 </motion.form>
               )}
 
-              {/* SUB-TAB 2: PREFERENCES */}
+              {/* PREFERENCES */}
               {activeTab === 'preferences' && (
                 <motion.div key="preferences" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-5">
                   <h2 className="text-lg font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-3">Study Preferences</h2>
@@ -249,7 +239,7 @@ export const SettingsPage = () => {
                 </motion.div>
               )}
 
-              {/* SUB-TAB 3: LANGUAGE */}
+              {/* LANGUAGE */}
               {activeTab === 'language' && (
                 <motion.div key="language" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-5">
                   <h2 className="text-lg font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-3">Language & Translation</h2>
@@ -270,7 +260,7 @@ export const SettingsPage = () => {
                 </motion.div>
               )}
 
-              {/* SUB-TAB 4: NOTIFICATIONS */}
+              {/* NOTIFICATIONS */}
               {activeTab === 'notifications' && (
                 <motion.div key="notifications" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-5">
                   <h2 className="text-lg font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-3">Notification Settings</h2>
@@ -293,7 +283,7 @@ export const SettingsPage = () => {
                 </motion.div>
               )}
 
-              {/* SUB-TAB 5: SECURITY */}
+              {/* SECURITY */}
               {activeTab === 'security' && (
                 <motion.div key="security" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
                   <h2 className="text-lg font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-3">Account Security</h2>

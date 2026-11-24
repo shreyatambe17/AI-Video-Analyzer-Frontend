@@ -46,7 +46,17 @@ export const RegisterPage = () => {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      localStorage.setItem('isAuthenticated', 'true'); // ✅ Save login state
+      localStorage.setItem('isAuthenticated', 'true');
+      
+      // ✅ Save New User Data
+      const userData = {
+        name: fullName,
+        email: email,
+        role: role.charAt(0).toUpperCase() + role.slice(1),
+        avatar: `https://ui-avatars.com/api/?name=${fullName}&background=FF6B6B&color=fff`
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+
       navigate('/');
     }, 800);
   };
