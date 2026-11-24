@@ -61,7 +61,6 @@ export const LoginPage = () => {
       setIsSubmitting(false);
       localStorage.setItem('isAuthenticated', 'true');
       
-      // ✅ Save User Data
       const name = email.includes('shreya') ? 'Shreya Tambe' : email.split('@')[0];
       const userData = {
         name: name.charAt(0).toUpperCase() + name.slice(1),
@@ -128,7 +127,7 @@ export const LoginPage = () => {
                 <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">Email</label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-[var(--color-text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); if (touched.email) setErrors(prev => ({ ...prev, email: validateEmail(e.target.value) })); }} onBlur={() => handleBlur('email')} className={`input-glass pl-10 ${touched.email && errors.email ? 'border-[var(--color-primary)]' : ''}`} />
+                  <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); if (touched.email) setErrors(prev => ({ ...prev, email: validateEmail(e.target.value) })); }} onBlur={() => handleBlur('email')} className={`input-glass ${touched.email && errors.email ? 'border-[var(--color-primary)]' : ''}`} />
                 </div>
                 {touched.email && errors.email && <p className="text-[var(--color-primary)] text-xs mt-1 font-medium flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.email}</p>}
               </div>
@@ -137,7 +136,7 @@ export const LoginPage = () => {
                 <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">Password</label>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-[var(--color-text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => { setPassword(e.target.value); if (touched.password) setErrors(prev => ({ ...prev, password: validatePassword(e.target.value) })); }} onBlur={() => handleBlur('password')} className={`input-glass pl-10 pr-10 ${touched.password && errors.password ? 'border-[var(--color-primary)]' : ''}`} />
+                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => { setPassword(e.target.value); if (touched.password) setErrors(prev => ({ ...prev, password: validatePassword(e.target.value) })); }} onBlur={() => handleBlur('password')} className={`input-glass pr-10 ${touched.password && errors.password ? 'border-[var(--color-primary)]' : ''}`} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
